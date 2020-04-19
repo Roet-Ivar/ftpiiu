@@ -1,3 +1,4 @@
+#include "controller_easy.h"
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -7,14 +8,14 @@
 #include <iosuhax.h>
 #include <iosuhax_devoptab.h>
 #include <iosuhax_disc_interface.h>
+
 #include "dynamic_libs/os_functions.h"
 #include "dynamic_libs/fs_functions.h"
 #include "dynamic_libs/gx2_functions.h"
 #include "dynamic_libs/sys_functions.h"
-#include "dynamic_libs/vpad_functions.h"
-#include "dynamic_libs/padscore_functions.h"
 #include "dynamic_libs/socket_functions.h"
 #include "dynamic_libs/ax_functions.h"
+
 #include "fs/fs_utils.h"
 #include "fs/sd_fat_devoptab.h"
 #include "system/memory.h"
@@ -134,7 +135,7 @@ int Menu_Main(void)
     log_print("Starting launcher\n");
 
     InitFSFunctionPointers();
-    InitVPadFunctionPointers();
+	controllerInit(); //Init all the controller stuff
 
     log_print("Function exports loaded\n");
 
@@ -200,7 +201,7 @@ int Menu_Main(void)
 	for(int i = 0; i < MAX_CONSOLE_LINES_DRC; i++)
         consoleArrayDrc[i] = NULL;
 
-    VPADInit();
+    
 
     // Prepare screen
     int screen_buf0_size = 0;
@@ -225,10 +226,7 @@ int Menu_Main(void)
     console_printf("FTPiiU v0.4u2 is listening on %u.%u.%u.%u:%i", (network_gethostip() >> 24) & 0xFF, (network_gethostip() >> 16) & 0xFF, (network_gethostip() >> 8) & 0xFF, (network_gethostip() >> 0) & 0xFF, PORT);
 
     int serverSocket = create_server(PORT);
-
 	int network_down = 0;
-    int vpadError = -1;
-    VPADData vpad;
     int vpadReadCounter = 0;
 
     while(serverSocket >= 0 && !network_down)
@@ -243,11 +241,25 @@ int Menu_Main(void)
         if(++vpadReadCounter >= 20)
         {
             vpadReadCounter = 0;
-
-            VPADRead(0, &vpad, 1, &vpadError);
-
-            if(vpadError == 0 && ((vpad.btns_d | vpad.btns_h) & VPAD_BUTTON_HOME))
-                break;
+			
+			updatePressedButtons(); //Update buttons state
+			//read all type of controllers for exit button press
+			if(isPressed(VPAD_BUTTON_HOME)) {
+				console_printf("GAMEPAD HOME");
+				break;
+			}	
+			if(isPressed(WPAD_BUTTON_HOME)) {
+				console_printf("WIIMOTE HOME");
+				break;
+			}
+			if(isPressed(WPAD_CLASSIC_BUTTON_HOME)) {
+				console_printf("CLASSIC PAD HOME");
+				break;
+			}
+			if(isPressed(WPAD_PRO_BUTTON_HOME)) {
+				console_printf("PRO PAD HOME");
+				break;
+			}
         }
 
 		usleep(1000);
