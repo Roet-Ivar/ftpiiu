@@ -245,19 +245,19 @@ int Menu_Main(void)
 			updatePressedButtons(); //Update buttons state
 			//read all type of controllers for exit button press
 			if(isPressed(VPAD_BUTTON_HOME)) {
-				console_printf("GAMEPAD HOME");
+				//console_printf("GAMEPAD: 0x%x", VPAD_BUTTON_HOME);
 				break;
 			}	
-			if(isPressed(WPAD_BUTTON_HOME)) {
-				console_printf("WIIMOTE HOME");
+			if(isPressed(WPAD_BUTTON_HOME) && (getPadType() == WIIMOTE)) {
+				//console_printf("WIIMOTE: 0x%x", WPAD_BUTTON_HOME);
 				break;
 			}
-			if(isPressed(WPAD_CLASSIC_BUTTON_HOME)) {
-				console_printf("CLASSIC PAD HOME");
+			if(isPressed(WPAD_CLASSIC_BUTTON_HOME) && (getPadType() == CLASSIC)) {
+				//console_printf("CLASSIC: 0x%x", WPAD_CLASSIC_BUTTON_HOME);
 				break;
 			}
-			if(isPressed(WPAD_PRO_BUTTON_HOME)) {
-				console_printf("PRO PAD HOME");
+			if(isPressed(WPAD_PRO_BUTTON_HOME) && (getPadType() == PRO)) {
+				//console_printf("PRO:     0x%x", WPAD_PRO_BUTTON_HOME);
 				break;
 			}
         }

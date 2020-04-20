@@ -1,10 +1,12 @@
 #include "controller_easy.h"
+
 int vpadError = -1;
 VPADData vpad;
 bool vpad_enabled;
 
 KPADData kpad;
 int en_chn;
+PadType pad;
 
 void updatePressedButtons() {
 	VPADRead(0, &vpad, 1, &vpadError);
@@ -28,29 +30,33 @@ void updatePressedButtons() {
 		en_chn = 3;
 	}
 	
+	//uprintf("device_type: %d", kpad.device_type);
 	KPADRead(en_chn, &kpad, 1);
+	
 	if(kpad.device_type <= 1) {
+		pad = WIIMOTE;
 		wpad_buttons_hold = kpad.btns_h;
 		wpad_buttons_push = kpad.btns_d;
 	}
-	else if(kpad.device_type <= 3) {
+	else if(kpad.device_type < 31) {
+		pad = CLASSIC;
 		wpad_buttons_hold = kpad.classic.btns_h;
 		wpad_buttons_push = kpad.classic.btns_d;
 	} 
 	else {
+		pad = PRO;
 		wpad_buttons_hold = kpad.pro.btns_h;
 		wpad_buttons_push = kpad.pro.btns_d;
 	}
 }
 
 int isPressed(int button) {
-	if((button & (wpad_buttons_hold | wpad_buttons_push)) |  (button & (vpad_buttons_hold | vpad_buttons_push))){
+    if((button & (wpad_buttons_hold | wpad_buttons_push)) |  (button & (vpad_buttons_hold | vpad_buttons_push))) return 1;
+    else return 0;
+}
 
-		return 1;
-	} 
-	else {
-		return 0;
-	}
+PadType getPadType() {
+	return pad;
 }
 
 void controllerInit() {

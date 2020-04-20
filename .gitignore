@@ -11,3 +11,11 @@
 /sd_loader/*.elf
 /udp_debug_reader/obj
 /udp_debug_reader/GeckoLog.txt
+include/os_functions.h
+include/iosuhax_disc_interface.h
+include/iosuhax_devoptab.h
+lib/libfat.a
+include/fat.h
+lib/libiosuhax.a
+include/iosuhax.h
+include/libfatversion.h
